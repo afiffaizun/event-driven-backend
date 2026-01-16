@@ -1,0 +1,20 @@
+# ADR 003: At-Least-Once Message Delivery
+
+## Status
+Accepted
+
+## Context
+Message loss is unacceptable for business-critical events,
+but exactly-once delivery adds significant complexity.
+
+## Decision
+Use at-least-once delivery with idempotent consumers.
+
+## Rationale
+- Simpler implementation
+- Better reliability
+- Industry-proven pattern
+
+## Consequences
+- Consumers must handle duplicate messages
+- Requires idempotency keys
