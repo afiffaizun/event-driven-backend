@@ -34,9 +34,14 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	token, err := h.authService.Login(r.Context(), req.Username, req.Password)
 	if err != nil {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		if err == service.ErrInvalidCredentials {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
+
 
 	resp := loginResponse{Token: token}
 	w.Header().Set("Content-Type", "application/json")
