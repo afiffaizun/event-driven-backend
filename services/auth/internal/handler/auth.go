@@ -30,7 +30,13 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid request", http.StatusBadRequest)
 		return
 	}
-	defer r.Body.Close()  // Add this
+	defer r.Body.Close()
+
+	// Validate required fields
+	if req.Username == "" || req.Password == "" {
+		http.Error(w, "username and password are required", http.StatusBadRequest)
+		return
+	}
 
 	token, err := h.authService.Login(r.Context(), req.Username, req.Password)
 	if err != nil {
@@ -42,11 +48,10 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	resp := loginResponse{Token: token}
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)  // Add this
-	if err := json.NewEncoder(w).Encode(resp); err != nil {  // Add error handling
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}

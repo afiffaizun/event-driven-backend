@@ -4,11 +4,12 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/afiffaizun/event-driven-backend/services/auth/internal/config"
 	"github.com/afiffaizun/event-driven-backend/services/auth/internal/handler"
 	"github.com/afiffaizun/event-driven-backend/services/auth/internal/middleware"
 	"github.com/afiffaizun/event-driven-backend/services/auth/internal/service"
-	"github.com/go-chi/chi/v5"
 )
 
 func main() {
@@ -19,7 +20,7 @@ func main() {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Logging)
 
-	// INitialize services and handlers
+	// Initialize services and handlers
 	authService := service.NewAuthService()
 	authHandler := handler.NewAuthHandler(authService)
 
