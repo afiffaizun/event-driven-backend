@@ -10,10 +10,15 @@ import (
 	"github.com/afiffaizun/event-driven-backend/services/auth/internal/handler"
 	"github.com/afiffaizun/event-driven-backend/services/auth/internal/middleware"
 	"github.com/afiffaizun/event-driven-backend/services/auth/internal/service"
+	
 )
 
 func main() {
-	cfg := config.Load()
+	cfg, err := config.Load()
+
+	if err != nil {
+		log.Fatal("failed to load:", err)
+	}
 
 	r := chi.NewRouter()
 
