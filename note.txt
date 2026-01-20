@@ -1,0 +1,20 @@
+// Cek
+docker compose ps
+
+docker compose up -d
+
+// Masuk ke database
+\c authdb
+
+// Masuk ke database
+docker exec -it auth-postgres psql -U authuser
+
+// lihat database
+\l
+
+//Cek Tabel
+\dt
+
+// Lihat Struktur Tabel
+\d users
+

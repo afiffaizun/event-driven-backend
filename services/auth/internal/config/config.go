@@ -6,10 +6,11 @@ type Config struct {
 	AppName string `env:"APP_NAME" envDefault:"auth-service"`
 	Port    string `env:"PORT" envDefault:"8080"`
 
-	LogLevel string `env:"LOG_LEVEL" envDefault:"info"`
-
-	// future
-	// DBURL string `env:"DATABASE_URL"`
+	DBhost string `env:"DB_HOST" envDefault:"localhost"`
+	DBPort string `env:"DB_PORT" envDefault:"5432"`
+	DBUser string `env:"DB_USER" envDefault:"authuser"`
+	DBPass string `env:"DB_PASS" envDefault:"authpass"`
+	DBName string `env:"DB_NAME" envDefault:"authdb"`
 }
 
 func Load() (*Config, error) {
@@ -18,4 +19,8 @@ func Load() (*Config, error) {
 		return nil, err
 	}
 	return cfg, nil
+}
+
+func (c *Config) DatabaseURL() string {
+	return "postgres://" + c.DBUser + ":" + c.DBPass + "@" + c.DBhost + ":" + c.DBPort + "/" + c.DBName
 }
