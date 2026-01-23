@@ -2,29 +2,35 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"github.com/afiffaizun/event-driven-backend/services/auth/internal/repository"
 	"github.com/afiffaizun/event-driven-backend/services/auth/internal/security"
 )
 
+var ErrInvalidCredential = errors.New("invalid username or password")
+
 type AuthService struct {
-	userRepo repository.UserRepository
+	userRepo  repository.UserRepository
+	jwtSecret string
 }
 
-func NewAuthService(userRepo repository.UserRepository) *AuthService {
-	return &AuthService{userRepo: userRepo}
+func NewAuthService(userRepo repository.UserRepository, jwtSecret string) *AuthService {
+	return &AuthService{
+		userRepo:  userRepo,
+		jwtSecret: jwtSecret,
+	}
 }
 
 func (s *AuthService) Login(ctx context.Context, username, password string) (string, error) {
 	user, err := s.userRepo.FindByUsername(ctx, username)
 	if err != nil {
-		return "", ErrInvalidCredentials
+		return "", ErrInvalidCredential
 	}
 
 	if err := security.CheckPassword(user.Password, password); err != nil {
-		return "", ErrInvalidCredentials
+		return "", ErrInvalidCredential
 	}
 
-	// nanti diganti JWT
-	return "dummy-token", nil
+	return security.GenerateToken(user.ID, user.Username, s.jwtSecret)
 }

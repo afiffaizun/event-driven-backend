@@ -1,26 +1,32 @@
 package config
 
-import "github.com/caarlos0/env/v10"
+import (
+	"os"
+)
 
 type Config struct {
-	AppName string `env:"APP_NAME" envDefault:"auth-service"`
-	Port    string `env:"PORT" envDefault:"8080"`
-
-	DBhost string `env:"DB_HOST" envDefault:"localhost"`
-	DBPort string `env:"DB_PORT" envDefault:"5432"`
-	DBUser string `env:"DB_USER" envDefault:"authuser"`
-	DBPass string `env:"DB_PASS" envDefault:"authpass"`
-	DBName string `env:"DB_NAME" envDefault:"authdb"`
+	AppName   string
+	Port      string
+	DBURL     string
+	JWTSecret string
 }
 
 func Load() (*Config, error) {
-	cfg := &Config{}
-	if err := env.Parse(cfg); err != nil {
-		return nil, err
-	}
-	return cfg, nil
+	return &Config{
+		AppName:   getEnv("APP_NAME", "auth-service"),
+		Port:      getEnv("PORT", "8080"),
+		DBURL:     getEnv("DATABASE_URL", "postgres://postgres:postgres@postgres:5432/auth_db?sslmode=disable"),
+		JWTSecret: getEnv("JWT_SECRET", "supersecret"),
+	}, nil
 }
 
 func (c *Config) DatabaseURL() string {
-	return "postgres://" + c.DBUser + ":" + c.DBPass + "@" + c.DBhost + ":" + c.DBPort + "/" + c.DBName
+	return c.DBURL
+}
+
+func getEnv(key, fallback string) string {
+	if val := os.Getenv(key); val != "" {
+		return val
+	}
+	return fallback
 }

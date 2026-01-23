@@ -11,11 +11,8 @@ services:
     environment:
       APP_NAME: auth-service
       PORT: 8080
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USER: authuser
-      DB_PASSWORD: authpass
-      DB_NAME: authdb
+      DATABASE_URL: postgres://authuser:authpass@postgres:5432/authdb?sslmode=disable
+      JWT_SECRET: supersecret
     depends_on:
       - postgres
 

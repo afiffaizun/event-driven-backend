@@ -1,0 +1,3 @@
+{"data":{"username":"admin"},"hypothesisId":"B","location":"postgres_user.go:17","message":"FindByUsername called","runId":"run1","sessionId":"debug-session","timestamp":27912}
+{"data":{"error":false,"errorType":"nil","isNoRows":false},"hypothesisId":"B","location":"postgres_user.go:25","message":"QueryRow result","runId":"run1","sessionId":"debug-session","timestamp":27912}
+{"data":{"userId":2,"username":"admin"},"hypothesisId":"B","location":"postgres_user.go:36","message":"User found successfully","runId":"run1","sessionId":"debug-session","timestamp":27912}
