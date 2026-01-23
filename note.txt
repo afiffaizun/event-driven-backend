@@ -4,10 +4,10 @@ docker compose ps
 docker compose up -d
 
 // Masuk ke database
-\c authdb
+docker exec -it auth-postgres psql -U authuser authdb
 
 // Masuk ke database
-docker exec -it auth-postgres psql -U authuser
+\c authdb
 
 // lihat database
 \l
