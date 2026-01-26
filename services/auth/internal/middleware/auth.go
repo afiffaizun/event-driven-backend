@@ -10,20 +10,20 @@ import (
 func Auth(secret string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			authHeader := r.Header.Get("Authorization")
-			if authHeader == "" {
+			auth := r.Header.Get("Authorization")
+			if auth == "" {
 				http.Error(w, "missing token", http.StatusUnauthorized)
 				return
 			}
 
-			parts := strings.Split(authHeader, " ")
-			if len(parts) != 2 || parts[0] != "Bearer" {
-				http.Error(w, "invalid token format", http.StatusUnauthorized)
+			parts := strings.Split(auth, " ")
+			if len(parts) != 2 {
+				http.Error(w, "invalid token", http.StatusUnauthorized)
 				return
 			}
 
-			token, err := security.ValidateToken(parts[1], secret)
-			if err != nil || !token.Valid {
+			claims, err := security.ValidateToken(parts[1], secret)
+			if err != nil || claims["type"] != "access" {
 				http.Error(w, "invalid token", http.StatusUnauthorized)
 				return
 			}
