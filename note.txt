@@ -6,15 +6,8 @@ docker compose up -d
 // Masuk ke database
 docker exec -it auth-postgres psql -U authuser authdb
 
-// Masuk ke database
-\c authdb
+\c authdb       -- Masuk ke database
 
-// lihat database
-\l
-
-//Cek Tabel
-\dt
-
-// Lihat Struktur Tabel
-\d users
-
+\l              -- Lihat semua database
+\dt             -- Lihat semua tabel
+\d users        -- Lihat struktur tabel users

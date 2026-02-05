@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/afiffaizun/event-driven-backend/services/auth/internal/repository"
 	"github.com/afiffaizun/event-driven-backend/services/auth/internal/security"
@@ -16,14 +17,22 @@ type TokenPair struct {
 }
 
 type AuthService struct {
-	userRepo  repository.UserRepository
-	jwtSecret string
+	userRepo        repository.UserRepository
+	refreshRepo     repository.RefreshTokenRepository
+	jwtSecret       string
+	refreshDuration time.Duration
 }
 
-func NewAuthService(userRepo repository.UserRepository, jwtSecret string) *AuthService {
+func NewAuthService(
+	userRepo repository.UserRepository,
+	refreshRepo repository.RefreshTokenRepository,
+	jwtSecret string,
+) *AuthService {
 	return &AuthService{
-		userRepo:  userRepo,
-		jwtSecret: jwtSecret,
+		userRepo:        userRepo,
+		refreshRepo:     refreshRepo,
+		jwtSecret:       jwtSecret,
+		refreshDuration: 7 * 24 * time.Hour,
 	}
 }
 
@@ -47,24 +56,32 @@ func (s *AuthService) Login(ctx context.Context, username, password string) (*To
 		return nil, err
 	}
 
-	return &TokenPair{
-		AccessToken:  access,
-		RefreshToken: refresh,
-	}, nil
+	if err := s.refreshRepo.Save(ctx, &repository.RefreshToken{
+		UserID:    user.ID,
+		Token:     refresh,
+		ExpiresAt: time.Now().Add(s.refreshDuration),
+	}); err != nil {
+		return nil, err
+	}
+
+	return &TokenPair{AccessToken: access, RefreshToken: refresh}, nil
 }
 
-func (s *AuthService) Refresh(refreshToken string) (string, error) {
-	claims, err := security.ValidateToken(refreshToken, s.jwtSecret)
+func (s *AuthService) Refresh(ctx context.Context, refreshToken string) (string, error) {
+	rt, err := s.refreshRepo.FindValid(ctx, refreshToken)
 	if err != nil {
 		return "", err
 	}
 
-	if claims["type"] != "refresh" {
-		return "", errors.New("invalid token type")
+	claims, err := security.ValidateToken(refreshToken, s.jwtSecret)
+	if err != nil || claims["type"] != "refresh" {
+		return "", errors.New("invalid token")
 	}
 
-	userID := int64(claims["sub"].(float64))
-	username := claims["username"]
+	username, _ := claims["username"].(string)
+	return security.GenerateAccessToken(rt.UserID, username, s.jwtSecret)
+}
 
-	return security.GenerateAccessToken(userID, username.(string), s.jwtSecret)
+func (s *AuthService) Logout(ctx context.Context, refreshToken string) error {
+	return s.refreshRepo.Revoke(ctx, refreshToken)
 }

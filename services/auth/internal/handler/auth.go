@@ -49,13 +49,25 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 	var req RefreshRequest
 	json.NewDecoder(r.Body).Decode(&req)
 
-	accessToken, err := h.authService.Refresh(req.RefreshToken)
+	access, err := h.authService.Refresh(r.Context(), req.RefreshToken)
 	if err != nil {
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	json.NewEncoder(w).Encode(map[string]string{
-		"access_token": accessToken,
+		"access_token": access,
 	})
+}
+
+func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	var req RefreshRequest
+	json.NewDecoder(r.Body).Decode(&req)
+
+	if err := h.authService.Logout(r.Context(), req.RefreshToken); err != nil {
+		http.Error(w, "failed to logout", http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

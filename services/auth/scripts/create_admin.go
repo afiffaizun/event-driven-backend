@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/afiffaizun/event-driven-backend/services/auth/internal/config"
 	"github.com/afiffaizun/event-driven-backend/services/auth/internal/db"
@@ -11,6 +12,11 @@ import (
 )
 
 func main() {
+	// Use localhost for running outside Docker
+	if os.Getenv("DATABASE_URL") == "" {
+		os.Setenv("DATABASE_URL", "postgres://authuser:authpass@localhost:5432/authdb?sslmode=disable")
+	}
+	
 	cfg, _ := config.Load()
 	ctx := context.Background()
 
