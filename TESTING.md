@@ -1,22 +1,5 @@
 # Testing Guide for Event-Driven Auth Service
 
-This guide provides step-by-step instructions for testing the authentication service, including Docker setup, API testing, and verification procedures.
-
-## Table of Contents
-
-1. [Prerequisites](#prerequisites)
-2. [Docker Setup & Service Launch](#docker-setup--service-launch)
-3. [Database Initialization](#database-initialization)
-4. [Authentication API Testing](#authentication-api-testing)
-5. [Token Management Testing](#token-management-testing)
-6. [Error Scenario Testing](#error-scenario-testing)
-7. [Health Check Testing](#health-check-testing)
-8. [Database Verification](#database-verification)
-9. [Testing Checklist](#testing-checklist)
-10. [Troubleshooting](#troubleshooting)
-
-## Prerequisites
-
 ### Required Software
 - **Docker** & **Docker Compose** (latest versions)
 - **Go 1.25.5+** (for local development)
