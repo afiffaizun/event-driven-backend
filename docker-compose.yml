@@ -10,7 +10,7 @@ services:
       APP_NAME: auth-service
       PORT: 8080
       DATABASE_URL: postgres://authuser:authpass@postgres:5432/authdb?sslmode=disable
-      JWT_SECRET: supersecret
+      JWT_SECRET: ${JWT_SECRET:-change-this-in-production}
     depends_on:
       - postgres
 

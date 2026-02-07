@@ -9,8 +9,6 @@ import (
 	"github.com/afiffaizun/event-driven-backend/services/auth/internal/security"
 )
 
-var ErrInvalidCredential = errors.New("invalid username or password")
-
 type TokenPair struct {
 	AccessToken  string
 	RefreshToken string
@@ -39,11 +37,11 @@ func NewAuthService(
 func (s *AuthService) Login(ctx context.Context, username, password string) (*TokenPair, error) {
 	user, err := s.userRepo.FindByUsername(ctx, username)
 	if err != nil {
-		return nil, ErrInvalidCredential
+		return nil, ErrInvalidCredentials
 	}
 
 	if err := security.CheckPassword(user.Password, password); err != nil {
-		return nil, ErrInvalidCredential
+		return nil, ErrInvalidCredentials
 	}
 
 	access, err := security.GenerateAccessToken(user.ID, user.Username, s.jwtSecret)
